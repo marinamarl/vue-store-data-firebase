@@ -1,35 +1,191 @@
 <template>
   <div id="app">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Add New Books</h3>
+      </div>
+      <div class="panel-body">
+         <form id="form" class="form-inline" v-on:submit.prevent="addBook">
+          <div class="form-group">
+            <label for="bookTitle">Title:</label>
+            <input type="text" id="bookTitle" class="form-control" v-model="newBook.title">
+          </div>
+          <div class="form-group">
+            <label for="bookAuthor">Author:</label>
+            <input type="text" id="bookAuthor" class="form-control" v-model="newBook.author">
+          </div>
+          <input type="submit" class="btn btn-primary" value="Add Book">
+        </form>
+      </div>
+    </div>
+  <form class="vue-form" @submit.prevent="submit">
 
-     <!-- <HelloWorld/> -->
+    <div class="error-message">
+      <p v-show="!email.valid">Oh, please enter a valid email address.</p>
+    </div>
+
+    <fieldset>
+      <legend>Vue Contact Form</legend>
+      <div>
+        <label class="label" for="name">Name</label>
+        <input type="text" name="name" id="name" required="" v-model="name">
+      </div>
+      <div>
+        <label class="label" for="email">Email</label>
+        <input type="email" name="email" id="email" required=""
+               :class="{ email , error: !email.valid }"
+               v-model="email.value">
+      </div>
+      <div>
+        <h4>Team Member</h4>
+        <p class="select">
+          <select class="budget" v-model="selection.member">
+					<option value="0">Sarah Drasner</option>
+					<option value="1">Evan You</option>
+					</select>
+        </p>
+      </div>
+
+      <div>
+        <h4>Framework</h4>
+
+        <ul class="vue-form-list">
+          <li>
+            <input type="radio" name="radio-1" id="radio-1" value="angular"
+                   v-model="selection.framework">
+            <label for="radio-1">AngularJS</label>
+          </li>
+          <li>
+            <input type="radio" name="radio-2" id="radio-2" value="react"
+                   v-model="selection.framework">
+            <label for="radio-2">ReactJS</label>
+          </li>
+          <li>
+            <input type="radio" name="radio-3" id="radio-3" value="vue"
+                   v-model="selection.framework">
+            <label for="radio-3">VueJS</label>
+          </li>
+        </ul>
+      </div>
+
+      <div>
+        <h4>Features</h4>
+        <ul class="vue-form-list">
+          <li v-for="(feature, index) in features">
+            <input type="checkbox"
+                   :value="feature"
+                   :id="'cb-feature-'+index"
+                   v-model="selection.features">
+            <label :for="'cb-feature-'+index">{{feature}}</label>
+          </li>
+          <li>
+            <input type="checkbox" id="checkbox-all" @click="checkAll">
+            <label for="checkbox-all">Check All</label>
+          </li>
+        </ul>
+      </div>
+      <div>
+        <label class="label" for="textarea">Message with Counter</label>
+        <textarea class="message" name="textarea" id="textarea" required=""
+                  v-model="message.text"
+                  :maxlength="message.maxlength"></textarea>
+        <span class="counter">{{ message.text.length }} / {{ message.maxlength }}</span>
+      </div>
+      <div>
+        <input type="submit" value="Send Form">
+      </div>
+    </fieldset>
+  </form>
+
+  <div class="debug">
+    <pre><code>{{ $data }}</code></pre>
+  </div>
   </div>
 </template>
 
 <script>
-// import Firebase from 'firebase'
-// let config = {
-//   apiKey: 'AIzaSyCMDAI881ToJhye3bPCJfjkgw9sc9AU4Ho',
-//   authDomain: 'contactformvue.firebaseapp.com',
-//   databaseURL: 'https://contactformvue.firebaseio.com',
-//   projectId: 'contactformvue',
-//   storageBucket: 'contactformvue.appspot.com',
-//   messagingSenderId: '86941929496'
-// }
+import Firebase from 'firebase'
+let config = {
+  apiKey: 'AIzaSyCMDAI881ToJhye3bPCJfjkgw9sc9AU4Ho',
+  authDomain: 'contactformvue.firebaseapp.com',
+  databaseURL: 'https://contactformvue.firebaseio.com',
+  projectId: 'contactformvue',
+  storageBucket: 'contactformvue.appspot.com',
+  messagingSenderId: '86941929496'
+}
 
-// let app = Firebase.initializeApp(config)
-// let db = app.database();
+let app = Firebase.initializeApp(config)
+let db = app.database()
+let booksRef = db.ref('books')
+let emailRegExp = /^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
 
-import HelloWorld from './components/HelloWorld'
 export default {
   name: 'App',
-  components: {
-    HelloWorld
+  firebase: {
+    books: booksRef
+  },
+  data: function() {
+    return {
+      newBook: {
+        title: '',
+        author: ''
+      },
+      name: "John Doe",
+      email: {
+        value: "jo@hnd.oe",
+        valid: true
+      },
+      features: ["Reactivity", "Encapsulation", "Data Binding"],
+      selection: {
+        member: "0",
+        framework: "vue",
+        features: []
+      },
+      message: {
+        text: `Dear Mr. President,\n...`,
+        maxlength: 255
+      },
+      submitted: false
+    };
+  },
+  methods: {
+    // send data to firebase
+    addBook: function () {
+      booksRef.push(this.newBook);
+      this.newBook.title = '';
+      this.newBook.author = '';
+    },
+    // submit form handler
+    submit: function() {
+      this.submitted = true;
+    },
+    // validate by type and value
+    validate: function(type, value) {
+      if (type === "email") {
+        this.email.valid = this.isEmail(value) ? true : false;
+      }
+    },
+    // check for valid email adress
+    isEmail: function(value) {
+      return emailRegExp.test(value);
+    },
+    // check or uncheck all
+    checkAll: function(event) {
+      this.selection.features = event.target.checked ? this.features : [];
+    }
+  },
+  watch: {
+    // watching nested property
+    "email.value": function(value) {
+      this.validate("email", value);
+    }
   }
 }
 
 </script>
 
 <style>
+  @import 'assets/contactForm.css';
 #app {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
