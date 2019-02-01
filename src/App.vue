@@ -18,7 +18,7 @@
         </form>
       </div>
     </div>
-  <form class="vue-form" @submit.prevent="submit">
+  <form class="vue-form" @submit.prevent="submit" v-on:submit.prevent="addUser">
 
     <div class="error-message">
       <p v-show="!newUser.email.valid">Oh, please enter a valid email address.</p>
@@ -45,7 +45,7 @@
         <span class="counter">{{ message.text.length }} / {{ message.maxlength }}</span>
       </div>
       <div>
-        <input type="submit" value="Send Form" v-on:submit.prevent="addUser">
+        <input type="submit" value="Send Form">
       </div>
     </fieldset>
   </form>
@@ -86,10 +86,10 @@ export default {
         author: ''
       },
       newUser: {
-        name: "i love the smell of tea in the morning",
+        name: "",
         email: {
-          value: "tearocks.oe",
-          valid: true
+          value: "",
+          valid: false
         }
       },
       name: "John Doe",
@@ -114,7 +114,7 @@ export default {
     addUser: function () {
       usersRef.push(this.newUser);
       this.newUser.name = '';
-      this.newUser.email = '';
+      this.newUser.email.value = '';
     },
 
     // submit form handler
