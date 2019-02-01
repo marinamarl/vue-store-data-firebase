@@ -1,33 +1,32 @@
 <template>
   <div id="app">
-    <img src="./assets/logo.png">
-    <HelloWorld/>
+
+     <!-- <HelloWorld/> -->
   </div>
 </template>
 
 <script>
-import Firebase from 'firebase'
-let config = {
-    apiKey: "AIzaSyCMDAI881ToJhye3bPCJfjkgw9sc9AU4Ho",
-    authDomain: "contactformvue.firebaseapp.com",
-    databaseURL: "https://contactformvue.firebaseio.com",
-    projectId: "contactformvue",
-    storageBucket: "contactformvue.appspot.com",
-    messagingSenderId: "86941929496"
-  };
+// import Firebase from 'firebase'
+// let config = {
+//   apiKey: 'AIzaSyCMDAI881ToJhye3bPCJfjkgw9sc9AU4Ho',
+//   authDomain: 'contactformvue.firebaseapp.com',
+//   databaseURL: 'https://contactformvue.firebaseio.com',
+//   projectId: 'contactformvue',
+//   storageBucket: 'contactformvue.appspot.com',
+//   messagingSenderId: '86941929496'
+// }
 
-let app = Firebase.initializeApp(config)
-let db = app.database()
-let booksRef = db.ref('books')
+// let app = Firebase.initializeApp(config)
+// let db = app.database();
 
 import HelloWorld from './components/HelloWorld'
-
 export default {
   name: 'App',
   components: {
     HelloWorld
   }
 }
+
 </script>
 
 <style>
