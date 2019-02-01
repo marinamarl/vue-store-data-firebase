@@ -1,23 +1,5 @@
 <template>
   <div id="app">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Add New Books</h3>
-      </div>
-      <div class="panel-body">
-         <form id="form" class="form-inline" v-on:submit.prevent="addBook">
-          <div class="form-group">
-            <label for="bookTitle">Title:</label>
-            <input type="text" id="bookTitle" class="form-control" v-model="newBook.title">
-          </div>
-          <div class="form-group">
-            <label for="bookAuthor">Author:</label>
-            <input type="text" id="bookAuthor" class="form-control" v-model="newBook.author">
-          </div>
-          <input type="submit" class="btn btn-primary" value="Add Book">
-        </form>
-      </div>
-    </div>
   <form class="vue-form" @submit.prevent="submit" v-on:submit.prevent="addUser">
 
     <div class="error-message">
@@ -33,16 +15,8 @@
       <div>
         <label class="label" for="email">Email</label>
         <input type="email" name="email" id="email" required=""
-               :class="{ email , error: !email.valid }"
+               :class="{ email , error: !newUser.email.valid }"
                v-model="newUser.email.value">
-      </div>
-
-      <div>
-        <label class="label" for="textarea">Message with Counter</label>
-        <textarea class="message" name="textarea" id="textarea" required=""
-                  v-model="message.text"
-                  :maxlength="message.maxlength"></textarea>
-        <span class="counter">{{ message.text.length }} / {{ message.maxlength }}</span>
       </div>
       <div>
         <input type="submit" value="Send Form">
@@ -69,22 +43,16 @@ let config = {
 
 let app = Firebase.initializeApp(config)
 let db = app.database()
-let booksRef = db.ref('books')
 let usersRef = db.ref('users')
 let emailRegExp = /^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
 
 export default {
   name: 'App',
   firebase: {
-    books: booksRef,
     users: usersRef
   },
   data: function() {
     return {
-      newBook: {
-        title: '',
-        author: ''
-      },
       newUser: {
         name: "",
         email: {
@@ -92,25 +60,11 @@ export default {
           valid: false
         }
       },
-      name: "John Doe",
-      email: {
-        value: "jo@hnd.oe",
-        valid: true
-      },
-      message: {
-        text: `Dear Mr. President,\n...`,
-        maxlength: 255
-      },
       submitted: false
     };
   },
   methods: {
     // send data to firebase
-    addBook: function () {
-      booksRef.push(this.newBook);
-      this.newBook.title = '';
-      this.newBook.author = '';
-    },
     addUser: function () {
       usersRef.push(this.newUser);
       this.newUser.name = '';
