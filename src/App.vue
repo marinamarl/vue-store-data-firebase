@@ -25,7 +25,8 @@
       </div>
       <div>
         <label class="label" for="phone">Phone Number</label>
-        <input type="text" name="phone" id="phone" required="" v-model="newUser.phone">
+        <input type="number" name="phone" id="phone" min="0" oninput="validity.valid||(value='');"
+         required="" v-model="newUser.phone.value">
       </div>
       <div>
         <label class="label" for="photo">Photo</label>
@@ -109,7 +110,7 @@ export default {
     // check for valid email adress
     isEmail: function(value) {
       return emailRegExp.test(value);
-    },
+    }
   },
   watch: {
     // watching nested property
