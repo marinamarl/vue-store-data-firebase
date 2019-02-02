@@ -18,7 +18,7 @@
       </div>
 
       <div>
-        <label class="label" for="email">Email</label>
+        <label class="label" for="newUser.email">Email</label>
         <input type="email" name="email" id="email" required=""
                :class="{ email , error: !newUser.email.valid }"
                v-model="newUser.email.value">
@@ -29,7 +29,7 @@
          required="" v-model="newUser.phone">
       </div>
       <div>
-        <input type="file" @change="onFileChanged">
+        <input type="file" name="file" id="file" required="" @change="onFileChanged">
       </div>
 
       <div>
@@ -84,8 +84,7 @@ export default {
           value: '',
           valid: false
         },
-        phone: '',
-        Photo: ''
+        phone: ''
       },
       selectedFile: null,
       submitted: false
@@ -98,7 +97,7 @@ export default {
       this.newUser.name = ''
       this.newUser.email.value = ''
       this.newUser.phone = ''
-      this.newUser.photo = this.selectedFile.name
+      this.newUser.photo = ''
       this.selectedFile = ''
     },
     // submit form handler
@@ -117,15 +116,13 @@ export default {
     },
     // handers for img upload
     onFileChanged (event) {
-      console.log(event)
       this.selectedFile = event.target.files[0]
-      console.log(this.selectedFile.name)
+      this.newUser.photo = this.selectedFile.name
     },
     onUpload () {
-      console.log('onUpload')
       let file = this.selectedFile
       let name = file.name
-     ref.child(name).put(file);
+      ref.child(name).put(file)
     }
   },
   watch: {

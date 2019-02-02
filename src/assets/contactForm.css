@@ -86,6 +86,7 @@
   .vue-form input[type="text"],
   .vue-form input[type="email"],
   .vue-form input[type="number"],
+  /* .vue-form input[type="file"], */
   .vue-form textarea,
   .vue-form select,
   .vue-form legend {
@@ -96,6 +97,7 @@
   .vue-form input[type="text"],
   .vue-form input[type="email"],
   .vue-form input[type="number"],
+  /* .vue-form input[type="file"], */
   .vue-form textarea,
   .vue-form select {
     padding: 12px;
