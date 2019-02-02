@@ -30,11 +30,10 @@
       </div>
       <div>
         <input type="file" @change="onFileChanged">
-        <button @click="onUpload">Upload!</button>
       </div>
 
       <div>
-        <input type="submit" value="Send Form">
+        <input type="submit" value="Send Form" @click="onUpload">
       </div>
     </fieldset>
 
@@ -56,6 +55,7 @@
 
 <script>
 import Firebase from 'firebase'
+
 let config = {
   apiKey: 'AIzaSyCMDAI881ToJhye3bPCJfjkgw9sc9AU4Ho',
   authDomain: 'contactformvue.firebaseapp.com',
@@ -67,9 +67,9 @@ let config = {
 
 let app = Firebase.initializeApp(config)
 let db = app.database()
+let ref = app.storage().ref()
 let usersRef = db.ref('users')
 let emailRegExp = /^[a-zA-Z0-9.!#$%&'*+=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/
-
 export default {
   name: 'App',
   firebase: {
@@ -85,9 +85,9 @@ export default {
           valid: false
         },
         phone: '',
-        Photo: '',
-        selectedFile: null
+        Photo: ''
       },
+      selectedFile: null,
       submitted: false
     }
   },
@@ -98,8 +98,8 @@ export default {
       this.newUser.name = ''
       this.newUser.email.value = ''
       this.newUser.phone = ''
-      this.newUser.photo = ''
-      this.newUser.selectedFile = ''
+      this.newUser.photo = this.selectedFile.name
+      this.selectedFile = ''
     },
     // submit form handler
     submit: function () {
@@ -117,12 +117,15 @@ export default {
     },
     // handers for img upload
     onFileChanged (event) {
-      console.log('onFileChanged')
-      this.newUser.selectedFile = event.target.files[0]
+      console.log(event)
+      this.selectedFile = event.target.files[0]
+      console.log(this.selectedFile.name)
     },
     onUpload () {
       console.log('onUpload')
-      axios.post('my-domain.com/file-upload', this.selectedFile)
+      let file = this.selectedFile
+      let name = file.name
+     ref.child(name).put(file);
     }
   },
   watch: {
