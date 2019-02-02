@@ -26,11 +26,11 @@
       <div>
         <label class="label" for="phone">Phone Number</label>
         <input type="number" name="phone" id="phone" min="0" oninput="validity.valid||(value='');"
-         required="" v-model="newUser.phone.value">
+         required="" v-model="newUser.phone">
       </div>
       <div>
-        <label class="label" for="photo">Photo</label>
-        <input type="text" name="photo" id="photo" required="" v-model="newUser.photo">
+        <input type="file" @change="onFileChanged">
+        <button @click="onUpload">Upload!</button>
       </div>
 
       <div>
@@ -68,14 +68,14 @@ let config = {
 let app = Firebase.initializeApp(config)
 let db = app.database()
 let usersRef = db.ref('users')
-let emailRegExp = /^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
+let emailRegExp = /^[a-zA-Z0-9.!#$%&'*+=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/
 
 export default {
   name: 'App',
   firebase: {
     users: usersRef
   },
-  data: function() {
+  data: function () {
     return {
       newUser: {
         name: '',
@@ -85,37 +85,50 @@ export default {
           valid: false
         },
         phone: '',
-        Photo: ''
+        Photo: '',
+        selectedFile: null
       },
       submitted: false
-    };
+    }
   },
   methods: {
     // send data to firebase
     addUser: function () {
-      usersRef.push(this.newUser);
-      this.newUser.name = '';
-      this.newUser.email.value = '';
+      usersRef.push(this.newUser)
+      this.newUser.name = ''
+      this.newUser.email.value = ''
+      this.newUser.phone = ''
+      this.newUser.photo = ''
+      this.newUser.selectedFile = ''
     },
     // submit form handler
-    submit: function() {
-      this.submitted = true;
+    submit: function () {
+      this.submitted = true
     },
     // validate by type and value
-    validate: function(type, value) {
-      if (type === "email") {
-        this.newUser.email.valid = this.isEmail(value) ? true : false;
+    validate: function (type, value) {
+      if (type === 'email') {
+        this.newUser.email.valid = this.isEmail(value)
       }
     },
     // check for valid email adress
-    isEmail: function(value) {
-      return emailRegExp.test(value);
+    isEmail: function (value) {
+      return emailRegExp.test(value)
+    },
+    // handers for img upload
+    onFileChanged (event) {
+      console.log('onFileChanged')
+      this.newUser.selectedFile = event.target.files[0]
+    },
+    onUpload () {
+      console.log('onUpload')
+      axios.post('my-domain.com/file-upload', this.selectedFile)
     }
   },
   watch: {
     // watching nested property
-    "newUser.email.value": function(value) {
-      this.validate("email", value);
+    'newUser.email.value': function (value) {
+      this.validate('email', value)
     }
   }
 }
