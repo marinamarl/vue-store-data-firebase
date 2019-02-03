@@ -38,7 +38,9 @@
 </template>
 
 <script>
-import Firebase from 'firebase'
+import firebase from 'firebase/app'
+import 'firebase/database'
+import 'firebase/storage'
 
 let config = {
   apiKey: 'AIzaSyCMDAI881ToJhye3bPCJfjkgw9sc9AU4Ho',
@@ -49,7 +51,7 @@ let config = {
   messagingSenderId: '86941929496'
 }
 
-let app = Firebase.initializeApp(config)
+let app = firebase.initializeApp(config)
 let db = app.database()
 let ref = app.storage().ref()
 let usersRef = db.ref('users')
