@@ -90,7 +90,7 @@ export default {
       selectedFile: null,
       submitted: false
     }
-    // loop sto object an einai keno to onoma px kai oxi validation sto browser me ksexoristh kathgoria error: {}
+    // It would be a good idea to have and added validation for each field, and not only for email (not all browsers behave the same with 'required').
     // na pairneis kai to url ths fwto meso tou promise otan anebainei (prwta stelneis thn fwto kai meta ta data)
   },
   methods: {
@@ -98,15 +98,19 @@ export default {
     submit () {
       let file = this.selectedFile
       let name = file.name
-console.log('data is sent')
       usersRef.push(this.newUser)
-      this.newUser.name = ''
-      this.newUser.email.value = ''
-      this.newUser.phone = ''
-      // this.newUser.photo = ''
-      // this.selectedFile = ''
       ref.child(name).put(file)
-      console.log('file is stored')
+      .then(snapshot => {
+       return snapshot.ref.getDownloadURL();   // Will return a promise with the download link
+   })
+      .then(downloadURL => {
+   console.log(`Successfully uploaded file and got download link - ${downloadURL}`);
+   return downloadURL;
+})
+      // this.newUser.name = ''
+      // this.newUser.email.value = ''
+      // this.newUser.phone = ''
+      // this.file.downloadURL= ''
       this.submitted = true
     },
     // validate by type and value
@@ -125,11 +129,6 @@ console.log('data is sent')
       this.selectedFile = event.target.files[0]
       this.newUser.photo = this.selectedFile.name
     }
-    // onUpload () {
-    //   let file = this.selectedFile
-    //   let name = file.name
-    //   ref.child(name).put(file)
-    // }
   },
   watch: {
     // watching nested property
