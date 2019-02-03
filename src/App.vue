@@ -1,12 +1,11 @@
 <template>
   <div id="app">
   <form class="vue-form" @submit.prevent="submit" v-if="submitted == false">
-    <div class="error-message">
-      <p v-show="!newUser.email.valid">Please make sure the email address is valid. Example: someone@somewhere.com.</p>
-    </div>
 
     <fieldset>
       <legend>Vue Contact Form</legend>
+      // It would be a good idea to have extra validation for each field (not all browsers behave the same with 'required').
+
       <div>
         <label class="label" for="name">Name</label>
         <input type="text" name="name" id="name" required v-model="newUser.name">
@@ -19,11 +18,9 @@
 
       <div>
         <label class="label" for="email">Email</label>
-        <input type="email" name="email" id="email" required
-               :class="{ error: !newUser.email.valid }"
-               v-model="newUser.email.value">
+        <input type="email" name="email" id="email" required v-model="newUser.email">
       </div>
-      <!-- @change kai oxi watcher -->
+
       <div>
         <label class="label" for="phone">Phone Number</label>
         <input type="number" name="phone" id="phone" min="0"
@@ -81,59 +78,32 @@ export default {
       newUser: {
         name: '',
         lastName: '',
-        email: {
-          value: '',
-          valid: false
-        },
-        phone: ''
+        email: '',
+        phone: '',
+        imgUrl: ''
       },
       selectedFile: null,
       submitted: false
     }
-    // It would be a good idea to have and added validation for each field, and not only for email (not all browsers behave the same with 'required').
-    // na pairneis kai to url ths fwto meso tou promise otan anebainei (prwta stelneis thn fwto kai meta ta data)
   },
   methods: {
     // submit form handler
-    submit () {
-      let file = this.selectedFile
-      let name = file.name
+    async submit () {
+      try {
+        let uploadFile = await ref.child(this.selectedFile.name).put(this.selectedFile)
+        this.newUser.imgUrl = await uploadFile.ref.getDownloadURL()
+      } catch(e) {
+        // error uploading image
+        console.error(e)
+      }
       usersRef.push(this.newUser)
-      ref.child(name).put(file)
-      .then(snapshot => {
-       return snapshot.ref.getDownloadURL();   // Will return a promise with the download link
-   })
-      .then(downloadURL => {
-   console.log(`Successfully uploaded file and got download link - ${downloadURL}`);
-   return downloadURL;
-})
-      // this.newUser.name = ''
-      // this.newUser.email.value = ''
-      // this.newUser.phone = ''
-      // this.file.downloadURL= ''
       this.submitted = true
     },
-    // validate by type and value
-    validate (type, value) {
-      if (type === 'email') {
-        this.newUser.email.valid = this.isEmail(value)
-      }
-    },
-    // check for valid email adress
-    isEmail (value) {
-      return emailRegExp.test(value)
-    },
-    // handers for img upload
+
+    //upload image name watcher
     onFileChanged (event) {
-      console.log('file is changed')
       this.selectedFile = event.target.files[0]
       this.newUser.photo = this.selectedFile.name
-    }
-  },
-  watch: {
-    // watching nested property
-    'newUser.email.value': function (value) {
-      this.validate('email', value)
     }
   }
 }
