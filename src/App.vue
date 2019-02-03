@@ -67,7 +67,7 @@ let app = Firebase.initializeApp(config)
 let db = app.database()
 let ref = app.storage().ref()
 let usersRef = db.ref('users')
-let emailRegExp = /^[a-zA-Z0-9.!#$%&'*+=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/
+
 export default {
   name: 'App',
   firebase: {
@@ -92,7 +92,7 @@ export default {
       try {
         let uploadFile = await ref.child(this.selectedFile.name).put(this.selectedFile)
         this.newUser.imgUrl = await uploadFile.ref.getDownloadURL()
-      } catch(e) {
+      } catch (e) {
         // error uploading image
         console.error(e)
       }
@@ -100,7 +100,7 @@ export default {
       this.submitted = true
     },
 
-    //upload image name watcher
+    // upload image name watcher
     onFileChanged (event) {
       this.selectedFile = event.target.files[0]
       this.newUser.photo = this.selectedFile.name
