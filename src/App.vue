@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-  <form class="vue-form" @submit.prevent="submit" v-on:submit.prevent="addUser" v-if="submitted == false">
+  <form class="vue-form" @submit.prevent="submit" v-if="submitted == false">
     <div class="error-message">
       <p v-show="!newUser.email.valid">Please make sure the email address is valid. Example: someone@somewhere.com.</p>
     </div>
@@ -9,31 +9,32 @@
       <legend>Vue Contact Form</legend>
       <div>
         <label class="label" for="name">Name</label>
-        <input type="text" name="name" id="name" required="" v-model="newUser.name">
+        <input type="text" name="name" id="name" required v-model="newUser.name">
       </div>
 
       <div>
         <label class="label" for="lastName">Last Name</label>
-        <input type="text" name="lastName" id="lastName" required="" v-model="newUser.lastName">
+        <input type="text" name="lastName" id="lastName" required v-model="newUser.lastName">
       </div>
 
       <div>
-        <label class="label" for="newUser.email">Email</label>
-        <input type="email" name="email" id="email" required=""
-               :class="{ email , error: !newUser.email.valid }"
+        <label class="label" for="email">Email</label>
+        <input type="email" name="email" id="email" required
+               :class="{ error: !newUser.email.valid }"
                v-model="newUser.email.value">
       </div>
+      <!-- @change kai oxi watcher -->
       <div>
         <label class="label" for="phone">Phone Number</label>
-        <input type="number" name="phone" id="phone" min="0" oninput="validity.valid||(value='');"
-         required="" v-model="newUser.phone">
+        <input type="number" name="phone" id="phone" min="0"
+         required v-model="newUser.phone">
       </div>
       <div>
-        <input type="file" name="file" id="file" required="" @change="onFileChanged">
+        <input type="file" name="file" id="file" required @change="onFileChanged">
       </div>
 
       <div>
-        <input type="submit" value="Send Form" @click="onUpload">
+        <input type="submit" value="Send Form">
       </div>
     </fieldset>
 
@@ -89,41 +90,46 @@ export default {
       selectedFile: null,
       submitted: false
     }
+    // loop sto object an einai keno to onoma px kai oxi validation sto browser me ksexoristh kathgoria error: {}
+    // na pairneis kai to url ths fwto meso tou promise otan anebainei (prwta stelneis thn fwto kai meta ta data)
   },
   methods: {
-    // send data to firebase
-    addUser: function () {
+    // submit form handler
+    submit () {
+      let file = this.selectedFile
+      let name = file.name
+console.log('data is sent')
       usersRef.push(this.newUser)
       this.newUser.name = ''
       this.newUser.email.value = ''
       this.newUser.phone = ''
-      this.newUser.photo = ''
-      this.selectedFile = ''
-    },
-    // submit form handler
-    submit: function () {
+      // this.newUser.photo = ''
+      // this.selectedFile = ''
+      ref.child(name).put(file)
+      console.log('file is stored')
       this.submitted = true
     },
     // validate by type and value
-    validate: function (type, value) {
+    validate (type, value) {
       if (type === 'email') {
         this.newUser.email.valid = this.isEmail(value)
       }
     },
     // check for valid email adress
-    isEmail: function (value) {
+    isEmail (value) {
       return emailRegExp.test(value)
     },
     // handers for img upload
     onFileChanged (event) {
+      console.log('file is changed')
       this.selectedFile = event.target.files[0]
       this.newUser.photo = this.selectedFile.name
-    },
-    onUpload () {
-      let file = this.selectedFile
-      let name = file.name
-      ref.child(name).put(file)
     }
+    // onUpload () {
+    //   let file = this.selectedFile
+    //   let name = file.name
+    //   ref.child(name).put(file)
+    // }
   },
   watch: {
     // watching nested property
@@ -136,13 +142,30 @@ export default {
 </script>
 
 <style>
-  @import 'assets/contactForm.css';
-#app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
+  #app {
+    font-family: 'Avenir', Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-align: center;
+    color: #2c3e50;
+    margin-top: 60px;
+  }
+  div {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    width: 50%;
+    margin: auto;
+  }
+  fieldset {
+    margin: auto;
+  }
+  fieldset, input {
+    border: 1px solid gray;
+    border-radius: 5px;
+  }
+  label, input {
+    margin: 5px;
+  }
+  input{padding: 5px;}
 </style>
