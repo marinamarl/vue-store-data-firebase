@@ -31,7 +31,7 @@
     <div class="vue-form" v-else>
       <legend>Your contact details have been succesfully submitted. Thank you!</legend>
       <div>
-        <input type="submit" value="Add another person!" @click="location.reload(true)">
+        <input type="submit" value="Add another person!" onclick="location.reload(true)">
       </div>
     </div>
   </div>
